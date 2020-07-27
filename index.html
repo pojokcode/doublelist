@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .duallist {
+            min-width: 400px;
+        }
+
+        .txt-search {
+            width: 100%;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <form name="frmreport">
+        <table width="100%">
+            <tr>
+                <td width="20%">Projek</td>
+                <td>
+                    <table border="0" cellpadding="2" cellspacing="0" width="100%">
+                        <tr>
+                            <td colspan="3">
+                                <input type="text" name="txtSearch" id="txtSearch" size="50" style="width: 100%;"
+                                    maxlength="100" placeholder="Filter...">
+                                <input id="hdnFilterEmpinp_emp_id" name="hdnFilterEmpinp_emp_id" type="Hidden" value="">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="50%">
+                                <select name="cboProject" id="cboProject" class="duallist" multiple size="10"
+                                    style="width: 100%;">
+                                    <option value="SJT|IMP1">Four Points By Sheraton Jakarta Thamrin [IMP1]
+                                    <option value="SJT|IMP1">Four Points By Sheraton Jakarta Thamrin [IMP2]
+                                    <option value="SJT|IMP1">Four Points By Sheraton Jakarta Thamrin [IMP3]
+                                    <option value="IMM-HR|IMP2">Indosat Mega Media [IMP2]
+                                    <option value="KPK-HR|IMP4">Komisi Pemberantasan Korupsi [IMP4]
+                                    <option value="PII-HR|IMP2">Penjaminan Infrastruktur Indonesia (Persero), PT [IMP2]
+                                    <option value="PPA-HR|IMP2">Perusahaan Pengelola Aset, PT-HR [IMP2]
+                                    <option value="KDM|IMP1">PT Kaltim Daya Mandiri [IMP1]
+                                    <option value="STN-HR|IMP2">The Stone, Autograph Collection Marriot [IMP2]
+                                </select>
+                            </td>
+                            <td>
+                                <input type="Button" name="btnSelect" value=">>"
+                                    onClick="changeMember(0,document.frmreport.cboProject,document.frmreport.cboProjectApp);">
+                                <p><input type="Button" name="btnSelect" value="<<"
+                                        onClick="changeMember(0,document.frmreport.cboProjectApp,document.frmreport.cboProject);">
+                            </td>
+                            <td width="50%">
+                                <select name="cboProjectApp" size="10" class="duallist" multiple style="width: 100%;">
+
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button type="button" onclick="submitview()">Submit</button>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+        function submitview() {
+            for (i = 0; i < document.frmreport.cboProjectApp.length; i++) {
+                document.frmreport.cboProjectApp.options[i].selected = true;
+            }
+            // document.frmreport.submit();
+        }
+
+        function changeMember(start, objSource, objTarget) {
+            var tmpID = " "
+            for (i = parseInt(start); i < objSource.length; i++) {
+                if (objSource.options[i].selected) {
+                    objTarget.options[objTarget.length] = new Option(objSource.options[i].text, objSource.options[i].value)
+                    objTarget.options[objTarget.length - 1].selected = true;
+                    tmpID = tmpID + "," + i
+                }
+            }
+            dataDel = tmpID.split(",")
+            for (i = dataDel.length - 1; i > 0; i--) {
+                objSource.options[dataDel[i]] = null;
+            }
+        }
+
+        //jQuery extension method:
+        jQuery.fn.filterByText = function (textbox) {
+            return this.each(function () {
+                var select = this;
+                var options = [];
+                $(select).find('option').each(function () {
+                    options.push({
+                        value: $(this).val(),
+                        text: $(this).text()
+                    });
+                });
+                $(select).data('options', options);
+
+                $(textbox).bind('change keyup', function () {
+                    var options = $(select).empty().data('options');
+                    var search = $.trim($(this).val());
+                    var regex = new RegExp(search, "gi");
+
+                    $.each(options, function (i) {
+                        var option = options[i];
+                        if (option.text.match(regex) !== null) {
+                            $(select).append(
+                                $('<option>').text(option.text).val(option.value)
+                            );
+                        }
+                    });
+                });
+            });
+        };
+
+        // You could use it like this:
+        $(function () {
+            $('#cboProject').filterByText($('#txtSearch'));
+        });
+    </script>
+</body>
+
+</html>
